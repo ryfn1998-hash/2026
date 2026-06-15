@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HTML 即時預覽工具</title>
+    <title>HTML 即時預覽工具暗影加持版</title>
     <style>
         * {
             box-sizing: border-box;
@@ -12,22 +12,22 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             display: flex;
+            flex-direction: row;
             height: 100vh;
             overflow: hidden;
             background-color: #1e1e1e;
             color: #fff;
         }
 
-        /* 程式碼輸入區 */
         .editor-container {
             width: 50%;
             height: 100%;
             display: flex;
             flex-direction: column;
             border-right: 2px solid #333;
-            transition: width 0.3s ease;
+            transition: all 0.3s ease;
             position: relative;
         }
 
@@ -54,7 +54,6 @@
             line-height: 1.5;
         }
 
-        /* 預覽區 */
         .preview-container {
             flex: 1;
             height: 100%;
@@ -71,8 +70,6 @@
             font-weight: bold;
             color: #666;
             border-bottom: 1px solid #ddd;
-            display: flex;
-            align-items: center;
         }
 
         iframe {
@@ -82,7 +79,6 @@
             background-color: #fff;
         }
 
-        /* 收折按鈕 */
         .toggle-btn {
             position: absolute;
             right: -15px;
@@ -101,30 +97,51 @@
             align-items: center;
             justify-content: center;
             font-size: 16px;
-            transition: background-color 0.2s;
         }
 
-        .toggle-btn:hover {
-            background-color: #0062a3;
-        }
-
-        /* 縮起狀態的 CSS 樣式 */
         .collapsed .editor-container {
             width: 0%;
             border-right: none;
-        }
-
-        .collapsed .textarea-wrapper {
-            display: none;
-        }
-        
-        .collapsed .editor-header {
-            display: none;
+            overflow: hidden;
         }
 
         .collapsed .toggle-btn {
             right: -30px;
             border-radius: 0 5px 5px 0;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .editor-container {
+                width: 100%;
+                height: 50%;
+                border-right: none;
+                border-bottom: 2px solid #333;
+            }
+
+            .toggle-btn {
+                right: 20px;
+                top: auto;
+                bottom: -15px;
+                transform: none;
+                width: 60px;
+                height: 30px;
+            }
+
+            .collapsed .editor-container {
+                width: 100%;
+                height: 0%;
+                border-bottom: none;
+                overflow: hidden;
+            }
+
+            .collapsed .toggle-btn {
+                bottom: -30px;
+                border-radius: 0 0 5px 5px;
+            }
         }
     </style>
 </head>
@@ -143,7 +160,7 @@
 <script>
     console.log("預覽視窗已載入 JavaScript！");
 </script></textarea>
-        <button class="toggle-btn" id="toggleBtn" title="切換全螢幕預覽">◀</button>
+        <button class="toggle-btn" id="toggleBtn">◀</button>
     </div>
 
     <div class="preview-container">
@@ -157,7 +174,6 @@
         const toggleBtn = document.getElementById('toggleBtn');
         const body = document.body;
 
-        // 更新預覽畫面的函式
         function updatePreview() {
             const code = htmlInput.value;
             const previewDoc = previewFrame.contentDocument || previewFrame.contentWindow.document;
@@ -167,27 +183,27 @@
             previewDoc.close();
         }
 
-        // 監聽輸入事件，達成即時預覽
+        function updateButtonIcon() {
+            const isMobile = window.innerWidth <= 768;
+            const isCollapsed = body.classList.contains('collapsed');
+            
+            if (isMobile) {
+                toggleBtn.textContent = isCollapsed ? '▼' : '▲';
+            } else {
+                toggleBtn.textContent = isCollapsed ? '▶' : '◀';
+            }
+        }
+
         htmlInput.addEventListener('input', updatePreview);
-
-        // 初始化時先執行一次預覽
+        window.addEventListener('resize', updateButtonIcon);
+        
         updatePreview();
+        updateButtonIcon();
 
-        // 收折/全螢幕切換功能
         toggleBtn.addEventListener('click', () => {
             body.classList.toggle('collapsed');
-            
-            // 改變按鈕箭頭方向
-            if (body.classList.contains('collapsed')) {
-                toggleBtn.textContent = '▶';
-                toggleBtn.title = "展開編輯器";
-            } else {
-                toggleBtn.textContent = '◀';
-                toggleBtn.title = "隱藏編輯器（全螢幕預覽）";
-            }
+            updateButtonIcon();
         });
     </script>
 </body>
 </html>
->
-
