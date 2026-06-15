@@ -1,14 +1,193 @@
 <!DOCTYPE html>
-
-<html>
+<html lang="zh-TW">
 <head>
-  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8">
-  <title>Hello, World!</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML 即時預覽工具</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #1e1e1e;
+            color: #fff;
+        }
+
+        /* 程式碼輸入區 */
+        .editor-container {
+            width: 50%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            border-right: 2px solid #333;
+            transition: width 0.3s ease;
+            position: relative;
+        }
+
+        .editor-header {
+            background-color: #2d2d2d;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #aaa;
+            border-bottom: 1px solid #333;
+        }
+
+        textarea {
+            flex: 1;
+            width: 100%;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            border: none;
+            padding: 15px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 16px;
+            resize: none;
+            outline: none;
+            line-height: 1.5;
+        }
+
+        /* 預覽區 */
+        .preview-container {
+            flex: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background-color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .preview-header {
+            background-color: #f5f5f5;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #666;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+        }
+
+        iframe {
+            width: 100%;
+            flex: 1;
+            border: none;
+            background-color: #fff;
+        }
+
+        /* 收折按鈕 */
+        .toggle-btn {
+            position: absolute;
+            right: -15px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 60px;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: background-color 0.2s;
+        }
+
+        .toggle-btn:hover {
+            background-color: #0062a3;
+        }
+
+        /* 縮起狀態的 CSS 樣式 */
+        .collapsed .editor-container {
+            width: 0%;
+            border-right: none;
+        }
+
+        .collapsed .textarea-wrapper {
+            display: none;
+        }
+        
+        .collapsed .editor-header {
+            display: none;
+        }
+
+        .collapsed .toggle-btn {
+            right: -30px;
+            border-radius: 0 5px 5px 0;
+        }
+    </style>
 </head>
 <body>
-  <h1>
-    Hello, World!
-  </h1>
+
+    <div class="editor-container" id="editorContainer">
+        <div class="editor-header">HTML 原始碼</div>
+        <textarea id="htmlInput" placeholder="在此輸入您的 HTML / CSS / JS 程式碼..." spellcheck="false"><h1>Hello World!</h1>
+<p>這是一個即時預覽工具。</p>
+
+<style>
+    h1 { color: #007acc; }
+    p { font-size: 18px; color: #333; }
+</style>
+
+<script>
+    console.log("預覽視窗已載入 JavaScript！");
+</script></textarea>
+        <button class="toggle-btn" id="toggleBtn" title="切換全螢幕預覽">◀</button>
+    </div>
+
+    <div class="preview-container">
+        <div class="preview-header">即時預覽畫面</div>
+        <iframe id="previewFrame"></iframe>
+    </div>
+
+    <script>
+        const htmlInput = document.getElementById('htmlInput');
+        const previewFrame = document.getElementById('previewFrame');
+        const toggleBtn = document.getElementById('toggleBtn');
+        const body = document.body;
+
+        // 更新預覽畫面的函式
+        function updatePreview() {
+            const code = htmlInput.value;
+            const previewDoc = previewFrame.contentDocument || previewFrame.contentWindow.document;
+            
+            previewDoc.open();
+            previewDoc.write(code);
+            previewDoc.close();
+        }
+
+        // 監聽輸入事件，達成即時預覽
+        htmlInput.addEventListener('input', updatePreview);
+
+        // 初始化時先執行一次預覽
+        updatePreview();
+
+        // 收折/全螢幕切換功能
+        toggleBtn.addEventListener('click', () => {
+            body.classList.toggle('collapsed');
+            
+            // 改變按鈕箭頭方向
+            if (body.classList.contains('collapsed')) {
+                toggleBtn.textContent = '▶';
+                toggleBtn.title = "展開編輯器";
+            } else {
+                toggleBtn.textContent = '◀';
+                toggleBtn.title = "隱藏編輯器（全螢幕預覽）";
+            }
+        });
+    </script>
 </body>
 </html>
+>
 
